@@ -3,7 +3,8 @@
 
 1. [Introduction to Spark DataFrames](#schema1)
 2. [Spark DataFrames Basics](#schema2)
-
+3. [Spark SQL](#schema3)
+4. [Spark DataFrame Basic Operations](#schema4)
 <hr>
 
 <a name="schema1"></a>
@@ -89,3 +90,94 @@ root
  |-- age: integer (nullable = true)
  |-- name: string (nullable = true)
 ```
+
+- Saber el tipo de una columna
+```
+type(df['age'])
+``` 
+```
+pyspark.sql.column.Column
+```
+
+```
+df.select('age')
+DataFrame[age: int]
+```
+- Mostrar el valor de una columnas
+```
+df.select('age').show()
++----+
+| age|
++----+
+|null|
+|  30|
+|  19|
++----+
+```
+- Añadir un columna al DataFrame.
+  -   Hay que tener en cuenta que no es una operación que modifique el df original.
+```
+ df.withColumn('newage',df['age']*2).show()
++----+-------+------+
+| age|   name|newage|
++----+-------+------+
+|null|Michael|  null|
+|  30|   Andy|    60|
+|  19| Justin|    38|
++----+-------+------+
+
+```
+ 
+- Cambiar el nombre de una columna
+```
+df.withColumnRenamed('age','new_age').show()
++-------+-------+
+|new_age|   name|
++-------+-------+
+|   null|Michael|
+|     30|   Andy|
+|     19| Justin|
++-------+-------+
+```
+
+
+<hr>
+
+<a name="schema3"></a>
+
+## 3. Spark SQL
+
+Podemos usar las querys de SQL para obtener resultados de nuestro DF
+
+```
+df.createOrReplaceTempView('people')
+results = spark.sql("SELECT * FROM people")
+results.show()
++----+-------+
+| age|   name|
++----+-------+
+|null|Michael|
+|  30|   Andy|
+|  19| Justin|
++----+-------+
+
+```
+
+<hr>
+
+<a name="schema4"></a>
+
+## 4. Spark DataFrame Basic Operations
+
+
+
+
+
+
+
+
+
+
+
+
+
