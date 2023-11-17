@@ -7,6 +7,7 @@
 4. [Spark DataFrame Basic Operations](#schema4)
 5. [Groupb y and Aggregate Operations](#schema5)
 6. [Missing Data](#schema6)
+7. [Dates and Timestamp](#schema7)
 
 
 
@@ -585,9 +586,93 @@ df.na.fill(mean_val[0][0], ['Sales']).show()
 |emp3| null|345.0|
 |emp4|Cindy|456.0|
 +----+-----+-----+
+```
 
+
+<hr>
+
+<a name="schema7"></a>
+
+## 7. Dates and Timestamps
+
+- Hay que importar varias funciones de la librería de pyspark
+```
+from pyspark.sql.functions import dayofmonth,hour,dayofyear,month,year,weekofyear,format_number,date_format
+
+df.select(dayofmonth(df['Date'])).show()
++----------------+
+|dayofmonth(Date)|
++----------------+
+|               4|
+|               5|
+|               6|
+|               7|
+|               8|
+|              11|
+|              12|
+|              13|
+|              14|
+|              15|
+|              19|
+|              20|
+|              21|
+|              22|
+|              25|
+|              26|
+|              27|
+|              28|
+|              29|
+|               1|
++----------------+
+only showing top 20 rows
 
 ```
+- Crear una columna Year y obtener la media por año de la columna Close
+```
+new_df = df.withColumn("Year",year(df['Date']))
+
+new_df.groupBy('Year').mean().select(["Year","avg(Close)"]).show()
++----+------------------+
+|Year|        avg(Close)|
++----+------------------+
+|2015|120.03999980555547|
+|2013| 472.6348802857143|
+|2014| 295.4023416507935|
+|2012| 576.0497195640002|
+|2016|104.60400786904763|
+|2010| 259.8424600000002|
+|2011|364.00432532142867|
++----+------------------+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
