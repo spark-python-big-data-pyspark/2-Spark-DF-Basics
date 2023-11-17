@@ -318,15 +318,141 @@ row.asDict()
 
 ## 5. Groupby and Aggregate Operations
 
+### groupBy
+
+- Agrupa los valores por una columna y se le añada una función de agregación
+```
+df.groupBy('Company').mean().show()
+
++-------+-----------------+
+|Company|       avg(Sales)|
++-------+-----------------+
+|   APPL|            370.0|
+|   GOOG|            220.0|
+|     FB|            610.0|
+|   MSFT|322.3333333333333|
++-------+-----------------+
+```
+
+### agg
+
+Aplica una función de agregación a la columna seleccionada
+```
+df.agg({'Sales':'sum'}).show()
+
++----------+
+|sum(Sales)|
++----------+
+|    4327.0|
++----------+
+```
 
 
+### Functions
+**pyspark.sql.functions**
 
+Es un módulo en PySpark que proporciona un conjunto de funciones para realizar operaciones comunes en columnas 
+de DataFrames. Estas funciones son similares a las funciones de SQL y pueden ser utilizadas para 
+realizar transformaciones y cálculos en los datos de un DataFrame.
 
+```
+from pyspark.sql.functions import countDistinct, avg, stddev
+df.select(countDistinct('Sales')).show()
++---------------------+
+|count(DISTINCT Sales)|
++---------------------+
+|                   11|
++---------------------+
+```
+- Podemos ponerle Alias a los datos generados
+```
+df.select(avg('Sales').alias('Average Sales')).show()
 
++-----------------+
+|    Average Sales|
++-----------------+
+|360.5833333333333|
++-----------------+
 
+```
+- Redondear un número por la cantidad de decimales, para eso necesitamos importar lo siguiente
 
+```
 
+from pyspark.sql.functions import format_number
+sales_std = df.select(stddev('Sales').alias('std'))
 
+sales_std.show()
++------------------+
+|               std|
++------------------+
+|250.08742410799007|
++------------------+
+
+```
+
+```
+sales_std.select(format_number('std',2)).show()
++---------------------+
+|format_number(std, 2)|
++---------------------+
+|               250.09|
++---------------------+
+
+sales_std.select(format_number('std',2).alias('std')).show()
++------+
+|   std|
++------+
+|250.09|
++------+
+
+```
+
+### orderBy
+- Ordena por defecto de menor a mayor, de forma ascedente.
+```
+
+df.orderBy("Sales").show()
++-------+-------+-----+
+|Company| Person|Sales|
++-------+-------+-----+
+|   GOOG|Charlie|120.0|
+|   MSFT|    Amy|124.0|
+|   APPL|  Linda|130.0|
+|   GOOG|    Sam|200.0|
+|   MSFT|Vanessa|243.0|
+|   APPL|   John|250.0|
+|   GOOG|  Frank|340.0|
+|     FB|  Sarah|350.0|
+|   APPL|  Chris|350.0|
+|   MSFT|   Tina|600.0|
+|   APPL|   Mike|750.0|
+|     FB|   Carl|870.0|
+```
+
+- Si lo queremos de forma decendente.
+
+```
+
+df.orderBy(df['Sales'].desc()).show()
++-------+-------+-----+
+|Company| Person|Sales|
++-------+-------+-----+
+|     FB|   Carl|870.0|
+|   APPL|   Mike|750.0|
+|   MSFT|   Tina|600.0|
+|     FB|  Sarah|350.0|
+|   APPL|  Chris|350.0|
+|   GOOG|  Frank|340.0|
+|   APPL|   John|250.0|
+|   MSFT|Vanessa|243.0|
+|   GOOG|    Sam|200.0|
+|   APPL|  Linda|130.0|
+|   MSFT|    Amy|124.0|
+|   GOOG|Charlie|120.0|
++-------+-------+-----+
+
+```
 
 
 
