@@ -5,7 +5,8 @@
 2. [Spark DataFrames Basics](#schema2)
 3. [Spark SQL](#schema3)
 4. [Spark DataFrame Basic Operations](#schema4)
-5. [Groupby and Aggregate Operations](#schema5)
+5. [Groupb y and Aggregate Operations](#schema5)
+6. [Missing Data](#schema6)
 
 
 
@@ -456,16 +457,137 @@ df.orderBy(df['Sales'].desc()).show()
 
 
 
+<hr>
+
+<a name="schema6"></a>
+## 6. Missing Data
+
+### Borrar todos los nulos
+
+```
+df.na.drop().show()
++----+-----+-----+
+|  Id| Name|Sales|
++----+-----+-----+
+|emp4|Cindy|456.0|
++----+-----+-----+
+```
+- Especificando argumentos, threshold esto lo que hace la fila tiene que tener dos nulos para borrarla
+```
+
+df.na.drop(thresh=2).show()
+
++----+-----+-----+
+|  Id| Name|Sales|
++----+-----+-----+
+|emp1| John| null|
+|emp3| null|345.0|
+|emp4|Cindy|456.0|
++----+-----+-----+
+
+```
+
+-  **How**, any que tengo algún valor no nulo
+
+```
+df.na.drop(how ='any' ).show()
++----+-----+-----+
+|  Id| Name|Sales|
++----+-----+-----+
+|emp4|Cindy|456.0|
++----+-----+-----+
+
+```
+
+ - **all** que todos sus valores sean nulos
+```
+df.na.drop(how ='all' ).show()
++----+-----+-----+
+|  Id| Name|Sales|
++----+-----+-----+
+|emp1| John| null|
+|emp2| null| null|
+|emp3| null|345.0|
+|emp4|Cindy|456.0|
++----+-----+-----+
+```
+
+- subset, pasar una lista para que busque allí los nulos
+```
+# subset, pasar una lista para que busque allí los nulos
+df.na.drop(subset = ['Sales']).show()
++----+-----+-----+
+|  Id| Name|Sales|
++----+-----+-----+
+|emp3| null|345.0|
+|emp4|Cindy|456.0|
++----+-----+-----+
+```
+
+### Rellenar los nulos
+
+- Rellenando con un string todos lo que sea de tipo string
+
+```
+df.na.fill('Fill Value').show()
++----+----------+-----+
+|  Id|      Name|Sales|
++----+----------+-----+
+|emp1|      John| null|
+|emp2|Fill Value| null|
+|emp3|Fill Value|345.0|
+|emp4|     Cindy|456.0|
++----+----------+-----+
+```
+-  Rellenando con un valor númerico, rellena todo lo que sea del tipo numérico.
+```
+
+df.na.fill(0).show()
++----+-----+-----+
+|  Id| Name|Sales|
++----+-----+-----+
+|emp1| John|  0.0|
+|emp2| null|  0.0|
+|emp3| null|345.0|
+|emp4|Cindy|456.0|
++----+-----+-----+
+```
+- Rellenar una columna en concreto con cierto valor
+```
+
+df.na.fill('No Name', subset = ['Name']).show()
++----+-------+-----+
+|  Id|   Name|Sales|
++----+-------+-----+
+|emp1|   John| null|
+|emp2|No Name| null|
+|emp3|No Name|345.0|
+|emp4|  Cindy|456.0|
+```
+- Rellenar con la media de los valores
+```
+from pyspark.sql.functions import mean
+
+mean_val = df.select(mean(df['Sales'])).collect()
+mean_val
+[Row(avg(Sales)=400.5)]
+
+mean_val[0][0]
+400.5
+```
+```
+df.na.fill(mean_val[0][0], ['Sales']).show()
++----+-----+-----+
+|  Id| Name|Sales|
++----+-----+-----+
+|emp1| John|400.5|
+|emp2| null|400.5|
+|emp3| null|345.0|
+|emp4|Cindy|456.0|
++----+-----+-----+
 
 
-
-
-
-
-
-
-
-
+```
 
 
 
